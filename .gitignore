@@ -1,0 +1,67 @@
+# ==========================================
+# 1. BACKEND: .NET / C# / VISUAL STUDIO
+# ==========================================
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Visual Studio / Rider folders
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.rsuser
+
+# Lỗi và logs
+*.log
+
+# Nếu bạn dùng SQLite để test
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# ==========================================
+# 2. FRONTEND: REACT / NODE.JS
+# ==========================================
+# Thư viện tải về (TUYỆT ĐỐI KHÔNG PUSH LÊN)
+node_modules/
+
+# Thư mục build (sản phẩm cuối cùng)
+build/
+dist/
+out/
+
+# Log files của npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cache
+.eslintcache
+.parcel-cache
+.next/
+
+# Các file chứa biến môi trường và mật khẩu nội bộ (CỰC KỲ QUAN TRỌNG)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Lưu ý: Thường người ta sẽ giữ lại file '.env' (trống) hoặc '.env.example' để làm mẫu
+
+# ==========================================
+# 3. HỆ ĐIỀU HÀNH & CÔNG CỤ KHÁC
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
