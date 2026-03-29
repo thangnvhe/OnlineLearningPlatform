@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OnlineLearningPlatform.Domain.Setting
+namespace OnlineLearningPlatform.Domain.Common
 {
     public class PagedResult<T> where T : class
     {

@@ -1,5 +1,5 @@
-﻿using OnlineLearningPlatform.Domain.Entities;
-using OnlineLearningPlatform.Domain.Setting;
+﻿using OnlineLearningPlatform.Domain.Common;
+using OnlineLearningPlatform.Domain.Entities;
 
 namespace OnlineLearningPlatform.Domain.Abstract
 {

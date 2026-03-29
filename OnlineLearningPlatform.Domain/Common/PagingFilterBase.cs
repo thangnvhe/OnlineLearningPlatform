@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OnlineLearningPlatform.Domain.Setting
+namespace OnlineLearningPlatform.Domain.Common
 {
     public abstract class PagingFilterBase
     {
@@ -14,7 +14,7 @@ namespace OnlineLearningPlatform.Domain.Setting
         public int Size
         {
             get => _size;
-            set => _size = (value > MaxPageSize) ? MaxPageSize : value;
+            set => _size = value > MaxPageSize ? MaxPageSize : value;
         }
         public string? Search { get; set; }
         public string? SortBy { get; set; }

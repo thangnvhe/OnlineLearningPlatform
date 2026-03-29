@@ -12,6 +12,8 @@ namespace OnlineLearningPlatform.Domain.Entities
         public string Address { get; set; }
         public bool IsActive { get; set; } = true;
         public string? ImgAvatarUrl { get; set; }
+        public string? RefresherToken { get; set; }
+        public DateTime? RefresherTokenExpiry { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<Classroom>? Classrooms { get; set; }
         public ICollection<ExamAttempt>? ExamAttempts { get; set; }

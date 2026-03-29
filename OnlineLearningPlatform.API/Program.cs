@@ -32,6 +32,24 @@ builder.Services.ConfigureIdentity(builder.Configuration);
 builder.Services.AddAutoMappers();
 // Cấu hình DI
 builder.Services.AddDependencyInjection();
+// add CORS 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendCors", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173"
+            ) 
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+// add MassTransit
+builder.Services.AddMassTransitConfiguration(builder.Configuration);
+// add StackExchange.Redis
+builder.Services.AddStackExchangeRedisCacheConfiguration();
 
 var app = builder.Build();
 

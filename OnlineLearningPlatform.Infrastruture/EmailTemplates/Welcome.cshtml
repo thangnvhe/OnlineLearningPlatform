@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chào mừng đến với Online Learning Platform</title>
+    <style>
+        /* CSS cơ bản cho Email - Tránh dùng các thuộc tính quá hiện đại như Flexbox/Grid */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .email-wrapper {
+            width: 100%;
+            background-color: #f4f7f6;
+            padding: 40px 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .email-header {
+            background-color: #2563eb; /* Màu xanh chủ đạo, bạn có thể đổi theo theme React của bạn */
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        .email-body {
+            padding: 40px 30px;
+        }
+        .email-body h2 {
+            color: #1e293b;
+            font-size: 20px;
+            margin-top: 0;
+        }
+        .highlight {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <div class="email-header">
+                <h1>ONLINE LEARNING PLATFORM</h1>
+            </div>
+
+            <div class="email-body">
+                <h2>Xin chào @Model.FirstName @Model.LastName,</h2>
+
+                <p>Chào mừng bạn đã chính thức gia nhập cộng đồng học tập của chúng tôi! Chúng tôi rất vui mừng được đồng hành cùng bạn trên con đường chinh phục những kiến thức mới.</p>
+
+                <p>Tài khoản của bạn đã được tạo thành công. Dưới đây là thông tin đăng nhập của bạn:</p>
+
+                <div style="background-color: #f1f5f9; padding: 15px; border-radius: 6px; border-left: 4px solid #2563eb; margin: 20px 0;">
+                    <p style="margin: 0;"><b>Email đăng nhập:</b> <span class="highlight">@Model.Email</span></p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: #64748b;">(Vui lòng sử dụng mật khẩu bạn đã thiết lập lúc đăng ký)</p>
+                </div>
+
+                <p>Để bắt đầu trải nghiệm, hãy đăng nhập và khám phá hàng trăm khóa học chất lượng cao ngay hôm nay:</p>
+
+                <div style="text-align: center;">
+                    <a href="http://localhost:3000/login" class="action-button">Đăng nhập ngay</a>
+                </div>
+
+                <p>Nếu bạn cần bất kỳ sự trợ giúp nào, đừng ngần ngại trả lời lại email này hoặc liên hệ với bộ phận hỗ trợ học viên của chúng tôi.</p>
+
+                <p>
+                    Chúc bạn có những giờ phút học tập thật hiệu quả!<br>
+                    <b>Đội ngũ Online Learning Platform</b>
+                </p>
+            </div>
+
+            <div class="email-footer">
+                <p>&copy; @DateTime.Now.Year Online Learning Platform. Tất cả các quyền được bảo lưu.</p>
+                <p>Bạn nhận được email này vì đã đăng ký tài khoản trên hệ thống của chúng tôi.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

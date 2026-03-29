@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,8 @@ using OnlineLearningPlatform.DataAccess.Data;
 using OnlineLearningPlatform.DataAccess.Repository;
 using OnlineLearningPlatform.Domain.Abstract;
 using OnlineLearningPlatform.Domain.Entities;
+using OnlineLearningPlatform.Infrastruture.Consumers;
+using OnlineLearningPlatform.Infrastruture.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +42,7 @@ namespace OnlineLearningPlatform.Infrastruture
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
+                options.SignIn.RequireConfirmedEmail = true; 
 
                 // Cấu hình Lockout (khóa tài khoản khi nhập sai nhiều lần)
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
@@ -88,7 +92,40 @@ namespace OnlineLearningPlatform.Infrastruture
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+            services.AddScoped<ICacheService, CacheService>();
+        }
 
+        public static void AddMassTransitConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<EmailEventConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h => {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+
+                    cfg.ReceiveEndpoint("email-queue", e =>
+                    {
+                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+                        e.ConfigureConsumer<EmailEventConsumer>(context);
+                    });
+                });
+            });
+        }
+
+        public static void AddStackExchangeRedisCacheConfiguration(this IServiceCollection services)
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost:6379";
+                options.InstanceName = "OnlineLearning_"; 
+            });
         }
     }
 }

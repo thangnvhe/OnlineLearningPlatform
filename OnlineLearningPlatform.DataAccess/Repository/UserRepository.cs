@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Domain.Abstract;
 using OnlineLearningPlatform.Domain.Entities;
-using OnlineLearningPlatform.Domain.Setting;
 using System.Threading;
 using OnlineLearningPlatform.DataAccess.Data;
+using OnlineLearningPlatform.Domain.Common;
 
 namespace OnlineLearningPlatform.DataAccess.Repository
 {

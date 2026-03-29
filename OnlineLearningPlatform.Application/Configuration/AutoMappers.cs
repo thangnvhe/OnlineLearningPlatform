@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using OnlineLearningPlatform.Application.DTOs.Request;
 using OnlineLearningPlatform.Application.DTOs.Response;
 using OnlineLearningPlatform.Domain.Entities;
 using System;
@@ -15,8 +16,11 @@ namespace OnlineLearningPlatform.Application.Configuration
         {
             // Map ApplicationUser to AuthResponse
             CreateMap<ApplicationUser, AuthResponse>()
-                .ForMember(dest => dest.Token, opt => opt.Ignore())
+                .ForMember(dest => dest.AccessToken, opt => opt.Ignore())
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
+            // Map RegisterRequest to ApplicationUser
+            CreateMap<RegisterRequest, ApplicationUser>();
+            
 
         }
     }
