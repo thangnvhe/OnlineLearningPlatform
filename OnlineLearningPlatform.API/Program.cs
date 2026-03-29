@@ -56,6 +56,8 @@ var app = builder.Build();
 app.AutoMigration().GetAwaiter().GetResult();
 app.SeedData(builder.Configuration).GetAwaiter().GetResult();
 
+app.UseCors("FrontendCors");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

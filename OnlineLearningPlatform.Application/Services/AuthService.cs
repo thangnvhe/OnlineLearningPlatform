@@ -98,18 +98,13 @@ namespace OnlineLearningPlatform.Application.Services
             var accessToken = GenerateJwtToken(user, roles);
 
             var refreshToken = Utilityz.GenerateRefreshToken();
-            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
             var response = _mapper.Map<AuthResponse>(user);
             response.AccessToken = accessToken;
 
-            user.RefresherToken = refreshToken;
-            user.RefresherTokenExpiry = refreshTokenExpiry;
+            var refreshTokenKey = $"refresh_token:{refreshToken}";
 
-            var updateResult = await _userManager.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-                return ServiceResult<AuthResponse>.Failure("Không thể lưu refresh token. " + string.Join("; ", updateResult.Errors.Select(e => e.Description)));
+            await _cacheService.SetAsync(refreshTokenKey, user.Id.ToString(), TimeSpan.FromDays(7));
 
             _httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
@@ -193,44 +188,44 @@ namespace OnlineLearningPlatform.Application.Services
         }
         public async Task<ServiceResult<AuthResponse>> RefreshTokenAsync(CancellationToken cancellationToken)
         {
+            // 1. Lấy token từ Cookie
             var refreshToken = _httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
-
             if (string.IsNullOrEmpty(refreshToken))
                 return ServiceResult<AuthResponse>.Failure("Refresh token không tồn tại.");
 
-           var untrackedUser = await _unitOfWork.Users.FindSingleAsync(u => 
-                                                u.RefresherToken == refreshToken && 
-                                                u.RefresherTokenExpiry > DateTime.UtcNow, cancellationToken);
+            // 2. [REDIS] Kiểm tra Token trong Redis xem có tồn tại không và lấy UserId ra
+            var refreshTokenCacheKey = $"refresh_token:{refreshToken}";
+            var userIdString = await _cacheService.GetAsync<string>(refreshTokenCacheKey);
 
-            if (untrackedUser == null)
+            if (string.IsNullOrEmpty(userIdString))
                 return ServiceResult<AuthResponse>.Failure("Refresh token không hợp lệ hoặc đã hết hạn.");
 
-            // 2. Dùng _userManager lấy lại User chuẩn có Tracking để cập nhật
-            var user = await _userManager.FindByIdAsync(untrackedUser.Id.ToString());
+            // 3. Tìm User chuẩn từ DB bằng Id (Chỉ đọc 1 bản ghi duy nhất, rất nhanh)
+            var user = await _userManager.FindByIdAsync(userIdString);
+            if (user == null)
+                return ServiceResult<AuthResponse>.Failure("Người dùng không tồn tại.");
 
-            // [REDIS] Cũng tối ưu lấy Role ở đây
-            var cacheKey = $"user_roles_{user!.Id}";
-            var roles = await _cacheService.GetAsync<IList<string>>(cacheKey);
-
+            // 4. Lấy Roles (Ưu tiên Redis như bạn đã làm)
+            var roleCacheKey = $"user_roles_{user.Id}";
+            var roles = await _cacheService.GetAsync<IList<string>>(roleCacheKey);
             if (roles == null)
             {
                 roles = await _userManager.GetRolesAsync(user);
-                await _cacheService.SetAsync(cacheKey, roles, TimeSpan.FromDays(7));
+                await _cacheService.SetAsync(roleCacheKey, roles, TimeSpan.FromDays(7));
             }
 
-            var newAccessToken = GenerateJwtToken(user!, roles);
+            // 5. Tạo Access Token mới và Refresh Token mới
+            var newAccessToken = GenerateJwtToken(user, roles);
 
             var newRefreshToken = Utilityz.GenerateRefreshToken();
             var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
-            user!.RefresherToken = newRefreshToken;
-            user.RefresherTokenExpiry = refreshTokenExpiry;
+            // 6. [REDIS] Xóa Token cũ và Lưu Token mới vào Redis
+            await _cacheService.RemoveAsync(refreshTokenCacheKey); // Xóa cái cũ cho sạch
+            var newRefreshTokenCacheKey = $"refresh_token:{newRefreshToken}";
+            await _cacheService.SetAsync(newRefreshTokenCacheKey, user.Id.ToString(), TimeSpan.FromDays(7));
 
-            var updateResult = await _userManager.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-                return ServiceResult<AuthResponse>.Failure("Không thể cập nhật refresh token mới.");
-
+            // 7. Cập nhật Cookie
             _httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
             {
                 HttpOnly = true,
@@ -239,6 +234,7 @@ namespace OnlineLearningPlatform.Application.Services
                 Expires = refreshTokenExpiry
             });
 
+            // 8. Map kết quả trả về
             var response = _mapper.Map<AuthResponse>(user);
             response.AccessToken = newAccessToken;
             response.Roles = roles.ToList();
